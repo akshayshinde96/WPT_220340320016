@@ -1,0 +1,100 @@
+<html>
+
+<body>
+<form>
+	<input id="bookid" type="text" placeholder="Book Id" />
+	<span id="message">Message</span><br><br>
+	<input id="bookname" type="text" placeholder="Book Name" /><br><br>
+	<input id="price" type="text" placeholder="Book Price" /><br><br>
+	<input id="update" type="button" value="Update Book" disabled>
+</form>
+</body>
+
+<script src="jquery-3.5.1.min.js"></script>
+<script>//our scrip will come here 
+
+
+	$(() => {
+		console.log("Page Loaded");
+
+// blur ********************************************************
+
+
+		$("#bookid").blur(() => {
+			console.log("blur event");
+
+			const input = { bookid: $("#bookid").val() };
+			console.log(input);
+
+			let parameterstotheserver = {
+
+				data: input,
+				url: "http://localhost:8081/getBook",
+				type: 'get',
+				datatype: "json",
+				success: (datafromserver) => {
+					console.log("data given by server in success : " + datafromserver.status);
+					if (datafromserver.status === true) {
+						$("#message").text("Bookid found");
+						$("#bookid").val(datafromserver.bookdetails.bookid);
+						$("#bookname").val(datafromserver.bookdetails.bookname);
+						$("#price").val(datafromserver.bookdetails.price);
+						$("#update").prop('disabled',false);
+					}
+					else {
+						$("#message").val("Bookid not found");
+						$("#bookname").val("");
+						$("#price").val("");
+						$("#update").prop('disabled',true);
+					}
+				},
+				error: (errorgivenbyserver) => {
+					console.log("Failed to contact to the server " + errorgivenbyserver);
+				}
+			}
+			$.ajax(parameterstotheserver);
+		});
+
+
+		//update ***************************************************************
+
+
+		$("#update").click(() => {
+			console.log("Update Button clicked");
+
+			const input2 = { bookid2: $("#bookid").val(), bookname2: $("#bookname").val(), price2: $("#price").val() };
+			console.log(input2);
+
+
+			let parameterstotheserver = {
+
+				data: input2,
+				url: "http://localhost:8081/update",
+				type: 'get',
+				datatype: "json",
+				success: (datafromserver) => {
+					console.log("data given by server in success : " + datafromserver.status);
+					if (datafromserver.status === true) {
+						$("#message").text("Bookid details Updated");
+						$("#bookid").val("");
+						$("#bookname").val("");
+						$("#price").val("");
+					}
+					else {
+						$("#message").val("Bookid Details Not Updated");
+					}
+				},
+				error: (errorgivenbyserver) => {
+					console.log("Failed to contact to the server " + errorgivenbyserver);
+				}
+			}
+			$.ajax(parameterstotheserver);
+
+
+		});
+	});
+
+</script>
+
+
+</html>
